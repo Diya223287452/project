@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Progress Tracker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz@10..48&family=Qwitcher+Grypen:wght@700&family=Tulpen+One&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* Global styles */
+      body {
+        font-family: Qwitcher Grypen;
+        background-color: #f0f0f0;
+      }
+
+      header {
+        background-color: #7e868c;
+        color: white;
+        text-align: center;
+        padding: 1rem 0;
+      }
+
+      main {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      /* Goal form styles */
+      .goal-form {
+        background-color: rgb(252, 242, 242);
+        padding: 1rem;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease;
+      }
+
+      .goal-form form {
+        display: grid;
+        gap: 1rem;
+      }
+
+      /* Goal list styles */
+      .goal-list ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      .goal-item {
+        background-color: rgb(252, 242, 242);
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 5px;
+        box-shadow: 0 0 5px black;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .goal-item h3 {
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .goal-details {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #ddd;
+        transition: max-height 0.5s ease, opacity 0.3s ease;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+      }
+
+      .goal-item.active .goal-details {
+        max-height: 1000px;
+        opacity: 1;
+      }
+
+      .expanded {
+        transform: scale(1.03);
+      }
+
+      /* Footer styles */
+      footer {
+        text-align: center;
+        background-color: #ccb9a1;
+        color: white;
+        padding: 1rem 0;
+      }
+
+      /* Status filter styles */
+      .status-filter {
+        margin-top: 1rem;
+        text-align: center;
+      }
+
+      .status-filter button {
+        font-family: Qwitcher Grypen;
+        margin: 0 0.5rem;
+        padding: 0.5rem 1rem;
+        background-color: #cda355;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .status-filter button.active {
+        font-family: Qwitcher Grypen;
+        background-color: #cda355;
+      }
+
+      /* Animation keyframes */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Progress Tracker</h1>
+    </header>
+    <main>
+      <section class="goal-form">
+        <h2>Create a New Goal</h2>
+        <form onsubmit="addGoal(event)">
+          <label for="goalName">Goal Name:</label>
+          <input type="text" id="goalName" required />
+          <label for="goalDescription">Description:</label>
+          <textarea id="goalDescription" required></textarea>
+          <label for="targetDate">Target Date:</label>
+          <input type="date" id="targetDate" required />
+          <button type="submit">Create Goal</button>
+        </form>
+      </section>
+      <section class="goal-list">
+        <h2>Your Goals</h2>
+        <div class="status-filter">
+          <button class="active" onclick="filterGoals('all')">All</button>
+          <button onclick="filterGoals('active')">Active</button>
+          <button onclick="filterGoals('completed')">Completed</button>
+        </div>
+        <ul id="goalList">
+          <li class="goal-item active" onclick="toggleExpand(this)">
+            <h3>Fitness Goal</h3>
+            <div class="goal-details">
+              <p>Description: Get in shape</p>
+              <p>Target Date: 2023-12-31</p>
+            </div>
+          </li>
+          <li class="goal-item active" onclick="toggleExpand(this)">
+            <h3>Learning Goal</h3>
+            <div class="goal-details">
+              <p>Description: Learn Vue.js</p>
+              <p>Target Date: 2023-10-15</p>
+            </div>
+          </li>
+          <li class="goal-item completed" onclick="toggleExpand(this)">
+            <h3>Travel Goal</h3>
+            <div class="goal-details">
+              <p>Description: Explore new destinations</p>
+              <p>Target Date: 2023-11-30</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2023 Progress Tracker</p>
+    </footer>
+    <script>
+      function toggleExpand(element) {
+        element.classList.toggle("active");
+      }
+
+      function filterGoals(status) {
+        const goalList = document.getElementById("goalList");
+        const goals = goalList.querySelectorAll(".goal-item");
+
+        goals.forEach((goal) => {
+          if (status === "all" || goal.classList.contains(status)) {
+            goal.style.display;
+            goal.style.display = "flex";
+          } else {
+            goal.style.display = "none";
+          }
+        });
+
+        const buttons = document.querySelectorAll(".status-filter button");
+        buttons.forEach((button) => {
+          button.classList.remove("active");
+        });
+
+        const activeButton = document.querySelector(
+          `.status-filter button:contains('${status}')`
+        );
+        if (activeButton) {
+          activeButton.classList.add("active");
+        }
+      }
+
+      function addGoal(event) {
+        event.preventDefault();
+
+        // Get form values
+        const goalName = document.getElementById("goalName").value;
+        const goalDescription =
+          document.getElementById("goalDescription").value;
+        const targetDate = document.getElementById("targetDate").value;
+
+        // Create a new goal item
+        const goalList = document.getElementById("goalList");
+        const newGoalItem = document.createElement("li");
+        newGoalItem.className = "goal-item active";
+        newGoalItem.innerHTML = `
+                <h3>${goalName}</h3>
+                <div class="goal-details">
+                    <p>Description: ${goalDescription}</p>
+                    <p>Target Date: ${targetDate}</p>
+                </div>
+            `;
+
+        // Add the new goal to the list
+        goalList.appendChild(newGoalItem);
+
+        // Clear the form inputs
+        document.getElementById("goalName").value = "";
+        document.getElementById("goalDescription").value = "";
+        document.getElementById("targetDate").value = "";
+      }
+    </script>
+  </body>
+</html>
